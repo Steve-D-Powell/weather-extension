@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Card, Layout, Heading } from "@shopify/polaris";
+import { Card, Heading, Button } from "@shopify/polaris";
 import { fetchOpenWeatherData, OpenWeatherData } from "../../utils/api";
 import "./WeatherCard.css";
 
 const WeatherCardContainer: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  return (
-    <Layout>
-      <Layout.Section>
-        <Card sectioned>{children}</Card>
-      </Layout.Section>
-    </Layout>
-  );
+  return <Card sectioned>{children}</Card>;
 };
 
 type WeatherCardState = "loading" | "error" | "ready";
 
-const WeatherCard: React.FC<{ city: string }> = ({ city }) => {
+interface cardProps {
+  city: string;
+  onDelete?: () => void;
+}
+
+const WeatherCard: React.FC<cardProps> = ({ city, onDelete }) => {
   const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null);
   const [cardState, setCardState] = useState<WeatherCardState>("loading");
 
@@ -37,6 +36,11 @@ const WeatherCard: React.FC<{ city: string }> = ({ city }) => {
     return (
       <WeatherCardContainer>
         {cardState === "loading" ? "Loading..." : "Error retrieving data!"}
+        <div>
+          <Button plain destructive onClick={onDelete}>
+            Remove
+          </Button>
+        </div>
       </WeatherCardContainer>
     );
   }
@@ -46,6 +50,11 @@ const WeatherCard: React.FC<{ city: string }> = ({ city }) => {
       <Heading>{city}</Heading>
       <p>{Math.round(weatherData.main.temp)}</p>
       <p>Feels Like: {Math.round(weatherData.main.feels_like)}</p>
+      {onDelete && (
+        <Button plain destructive onClick={onDelete}>
+          Remove
+        </Button>
+      )}
     </WeatherCardContainer>
   );
 };
