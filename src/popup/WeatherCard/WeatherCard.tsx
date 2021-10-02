@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Heading, Button } from "@shopify/polaris";
 import { fetchOpenWeatherData, OpenWeatherData } from "../../utils/api";
 import "./WeatherCard.css";
+import { LocalStorageOptions } from "../../utils/storage";
 
 const WeatherCardContainer: React.FC<{
   children: React.ReactNode;
@@ -11,17 +12,16 @@ const WeatherCardContainer: React.FC<{
 
 type WeatherCardState = "loading" | "error" | "ready";
 
-interface cardProps {
+const WeatherCard: React.FC<{
   city: string;
   onDelete?: () => void;
-}
-
-const WeatherCard: React.FC<cardProps> = ({ city, onDelete }) => {
+  options: LocalStorageOptions;
+}> = ({ city, onDelete, options }) => {
   const [weatherData, setWeatherData] = useState<OpenWeatherData | null>(null);
   const [cardState, setCardState] = useState<WeatherCardState>("loading");
 
   useEffect(() => {
-    fetchOpenWeatherData(city)
+    fetchOpenWeatherData(city, options.tempScale)
       .then((data) => {
         setWeatherData(data);
         setCardState("ready");
@@ -30,7 +30,7 @@ const WeatherCard: React.FC<cardProps> = ({ city, onDelete }) => {
         console.log(err);
         setCardState("error");
       });
-  }, [city]);
+  }, [city, options]);
 
   if (cardState === "loading" || cardState === "error") {
     return (

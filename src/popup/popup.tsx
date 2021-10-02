@@ -5,16 +5,25 @@ import WeatherCard from "./WeatherCard";
 import "@shopify/polaris/build/esm/styles.css";
 import { AppProvider, Button, TextField, Layout, Page } from "@shopify/polaris";
 import enTranslations from "@shopify/polaris/locales/en.json";
-import { setStoredCities, getStoredCities } from "../utils/storage";
+import {
+  setStoredCities,
+  getStoredCities,
+  setStoredOptions,
+  getStoredOptions,
+  LocalStorageOptions,
+} from "../utils/storage";
 
 const App: React.FC<{}> = () => {
   const [cities, setCitites] = useState<string[]>([]);
   const [cityInput, setCityInput] = useState<string>("");
+  const [options, setOptions] = useState<LocalStorageOptions | null>(null);
 
   useEffect(() => {
     getStoredCities().then((cities) => {
-      console.log("Get", cities);
       setCitites(cities);
+    });
+    getStoredOptions().then((options) => {
+      setOptions(options);
     });
   }, []);
 
@@ -39,6 +48,20 @@ const App: React.FC<{}> = () => {
     });
   };
 
+  const handleDegreeChange = () => {
+    const newOptions: LocalStorageOptions = {
+      ...options,
+      tempScale: options.tempScale === "metric" ? "imperial" : "metric",
+    };
+    setStoredOptions(newOptions).then(() => {
+      setOptions(newOptions);
+    });
+  };
+
+  if (!options) {
+    return null;
+  }
+
   return (
     <>
       <Page>
@@ -51,13 +74,21 @@ const App: React.FC<{}> = () => {
               value={cityInput}
               autoComplete="off"
               onChange={handleCityChange}
-              connectedRight={<Button onClick={addCityHandler}>Add</Button>}
+              connectedRight={
+                <>
+                  <Button onClick={addCityHandler}>Add</Button>
+                  <Button onClick={handleDegreeChange}>
+                    {options.tempScale === "metric" ? "\u2103" : "\u2109"}
+                  </Button>
+                </>
+              }
             />
           </Layout.Section>
           <Layout.Section>
             {cities.map((city, index) => (
               <WeatherCard
                 city={city}
+                options={options}
                 key={index}
                 onDelete={() => onDeleteHandler(index)}
               />
