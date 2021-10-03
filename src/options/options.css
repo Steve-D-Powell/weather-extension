@@ -1,3 +1,15 @@
 body {
-  background-color: #1c1c1c;
+  background-color: #f6f6f7;
+}
+
+.options-container {
+  margin: 30px 20%;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+.Polaris-Layout {
+  justify-content: flex-end;
 }
