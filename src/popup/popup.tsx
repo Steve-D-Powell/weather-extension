@@ -85,6 +85,9 @@ const App: React.FC<{}> = () => {
             />
           </Layout.Section>
           <Layout.Section>
+            {options.homeCity != "" && (
+              <WeatherCard city={options.homeCity} options={options} />
+            )}
             {cities.map((city, index) => (
               <WeatherCard
                 city={city}
